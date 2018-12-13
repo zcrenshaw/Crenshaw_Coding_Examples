@@ -1,0 +1,45 @@
+Names: Ni'Gere Epps & Zack Crenshaw
+CNET-ID: nigereepps & zcrenshaw
+
+To Space and Back
+
+In this game, the player helps a rocket scientist get their rocket into space by experimenting with different fuels and fuel ratios in order to advance humankind’s knowledge of space flight. 
+
+Specs:
+
+Display: 
+--Rocket scientist in the corner, with a text box with instructions. 
+--Help button (gives hint)
+--Settings button (language, soundtrack, toggle text-speech) 
+--Reset button 
+--Sound toggle button
+--Stats box. 
+--Image of Rocket on launchpad as main display. 
+--Picture of rocket and fuels split into equal parts.
+--Colorblind friendly color palette.
+
+Stats: 
+--Levels of each fuel type used 
+--Current height, 
+--Max height, 
+--High score, 
+--Number of attempts of a level, 
+
+
+Level 1: Manipulate solid fuel
+--Allow user to enter number of pieces to split fuel into (1-10) (If enter out of bounds number, ask again).
+--Show the fuel (in shape of circle), split into parts. Allow user to click or enter # of pieces to insert into rocket. Fizzle animation when adding. Simplify fractions (i.e. if split into 8 pieces and insert 2 pieces, show 2/8 = ¼).
+--Rocket flying animation (with color gradient / different color at different height as rocket gets closer to space).
+
+
+Level 5: Manipulate both fuels with constant fractions
+--Allow user to control both fuels (one at any given time, however)
+--Can only use one fraction type (combining quarters of each fuel)
+--Find the correct ratio of both types of fuels to get the best launch
+
+
+Level 6: Manipulate both fuels with added fraction complexity
+--Allow user to control both fuels (one at any given time, however)
+--Can change each fraction type (1/2, or 1/3, or 1/4 etc.)
+--Find the correct ratio of both types of fuels to get to space
+--Congratulations message on entrance into space, try again option
