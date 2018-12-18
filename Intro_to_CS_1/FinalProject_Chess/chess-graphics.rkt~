@@ -1,0 +1,128 @@
+#lang typed/racket
+
+(require typed/test-engine/racket-tests)
+
+(require "../include/cs151-core.rkt")
+(require "../include/cs151-image.rkt")
+
+(require "../project1/optional.rkt")
+(require "../project1/loc.rkt")
+(require "chess-logic.rkt")
+
+;; UNICODE pieces ♔♕♖♗♘♙♚♛♜♝♞♟
+
+;; ==== ==== ==== ====
+;; external interface
+
+(provide board->image
+         promote->image
+         )
+
+
+(: get-piece : Square -> String)
+;;gets the piece from a square
+(define (get-piece square)
+  (match square
+    ['None ""]
+    [(Some (Piece type player)) (match player
+                                  ['Black (match type
+                                            ['Pawn "♟"]
+                                            ['Bishop "♝"]
+                                            ['Knight "♞"]
+                                            ['Rook "♜"]
+                                            ['King "♚"]
+                                            ['Queen "♛"])]
+                                  ['White  (match type
+                                            ['Pawn "♙"]
+                                            ['Bishop "♗"]
+                                            ['Knight "♘"]
+                                            ['Rook "♖"]
+                                            ['King "♔"]
+                                            ['Queen "♕"])])]))
+                                       
+(: square->image : Square Integer -> Image)
+;;makes an image of the contents of a square
+(define (square->image square size)
+  (text (get-piece square) (cast (exact-ceiling (* size .72)) Byte) "black"))
+
+(: row-of-squares (Integer Integer -> Image))
+;; produces row of n squares with side length s
+(define (row-of-squares n s)
+  (cond
+    [(<= n 0) empty-image]
+    [else (beside
+           (square s "outline" "black")
+           (row-of-squares (- n 1) s))]))
+
+(: populate-row (Integer Integer Integer Board Image-Color Image-Color -> Image))
+;; draws a row of squares with pieces 
+(define (populate-row n s index board c1 c2)
+  (cond
+    [(<= n 0) empty-image]
+    [(> n 1) (overlay
+              (row-of-squares n s)
+              (beside
+               (overlay
+                (square->image (list-ref board index) s)
+                (square s "solid" c1))
+               (overlay
+                (square->image (list-ref board (add1 index)) s)
+                (square s "solid" c2))
+               (populate-row (- n 2) s (+ index 2) board c1 c2)))]
+    [(= n 1) (overlay
+              (row-of-squares n s)
+              (beside
+               (overlay
+                (square->image (list-ref board index) s)
+                (square s "solid" c1))
+               (populate-row (- n 1) s (+ index 1) board c1 c2)))]
+    [else empty-image]))
+
+(: populate-board (Integer Integer Integer Integer Board Image-Color Image-Color -> Image))
+;;produces full board
+ (define (populate-board s n r index board c1 c2)
+  (cond
+    [(<= r 0) empty-image]
+    [(>= r 2) (above
+               (populate-board s n (- r 2) (+ index (* 2 n)) board c1 c2)
+               (populate-row n s (+ index n) board c2 c1)
+                (populate-row n s index board c1 c2)
+              )]
+    [else 
+               (populate-row n s index board c1 c2)]))
+
+
+(: board->image : Board Integer -> Image)
+;;makes an image out of the board
+(define (board->image board size)
+  (match board
+    ['() empty-image]
+    [(cons first rest) (populate-board size 8 8 0 board "peru" "beige")]))
+
+(: promote->image : Board Integer -> Image)
+;;makes a row for promotion gui
+(define (promote->image board size)
+  (match board
+    ['() empty-image]
+    [(cons first rest) (populate-board size 4 1 0 board "peru" "beige")]))
+
+
+;(board->image starting-board 30)
+;
+;(board->image (strings->board (list "R" "N" "B" "Q" "K" "B" "N" "R"
+;                    "P" "P" "P" "P" "P" "P" "P" "P"
+;                    "-" "-" "-" "-" "-" "-" "-" "-"
+;                    "-" "-" "-" "-" "-" "-" "-" "-"
+;                    "-" "-" "-" "-" "-" "-" "-" "-"
+;                    "-" "-" "-" "-" "-" "-" "-" "-"
+;                    "p" "p" "p" "p" "p" "p" "p" "p"
+;                    "r" "n" "b" "q" "k" "b" "n" "r")) 40)
+
+  
+ 
+   
+   
+
+
+
+

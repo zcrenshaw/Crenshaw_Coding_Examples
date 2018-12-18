@@ -1,0 +1,22 @@
+zcrenshaw p2bomb grade: 59/60
+bomb246 zcrenshaw Thu Apr 19 15:13 valid
+    Defused:   6
+    Explosion: 3
+    Score:     59
+
+###### bomb246 created: Sun Apr 29 17:44:20 2018 ######
+Tue Apr 17 16:09:27 2018: phase 1 exploded: 'hello'
+Tue Apr 17 23:24:56 2018: phase 1 exploded: 'Bartlett is a hub for student kvetching'
+Tue Apr 17 23:35:07 2018: phase 1 exploded: 'Bartlett is a hub for student kvetching'
+Tue Apr 17 23:54:11 2018: phase 1 defused: 'Bartlett is a hub for student kvetching cs154'
+Wed Apr 18 01:46:55 2018: phase 2 defused: '27 81 243 728 2183 6548'
+Wed Apr 18 16:52:10 2018: phase 3 defused: '1 742'
+Wed Apr 18 20:58:31 2018: phase 4 defused: '1 0'
+Wed Apr 18 21:52:59 2018: phase 5 defused: 'kglben'
+Thu Apr 19 14:33:02 2018: phase 4 defused: '1 0 '
+Thu Apr 19 15:13:53 2018: phase 6 defused: '3 1 6 4 5 2'
+Thu Apr 19 15:33:00 2018: phase 4 defused: '1 0 Qipfojy9Cju'
+Thu Apr 19 15:43:53 2018: phase 4 defused: '1 0 cs154'
+Thu Apr 19 15:51:40 2018: phase 4 defused: '1 0 aiafaja9aja'
+Thu Apr 19 15:55:24 2018: phase 4 defused: '1 0 secretphase'
+Thu Apr 19 19:20:15 2018: phase 4 defused: '1 0 Phoenix8Bit'

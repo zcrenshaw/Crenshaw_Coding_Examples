@@ -1,0 +1,59 @@
+README
+
+CMSC 15200, Homework 6, Winter 2018
+
+=== files included ===
+
+il.h, il.c, il_ev.c   int lists
+iq.h, iq.c, iq_ev.c   int queues
+is.h, iq.s, is_ev.c   int stacks
+vx.h, vx.c, vx_ev.c   vertex, each with char *label and visited flag
+graph.h, graph.c,     directed graphs, using adjacency list repr.
+  graph_ev.c
+
+bfs.h, bfs.c          breadth-first search
+dfs.h, dfs.c          depth-first search
+
+Makefile              targets for all main programs, and clean
+
+README                this file
+
+=== what to do ===
+
+This code is largely complete, but has a few critical omissions. Find
+all the instances of the word TODO in the code, and fill in the
+missing operations. You can find these quickly by typing
+
+  $ grep TODO *.c
+
+at the command line.
+
+=== how to use ===
+
+The file graph.c includes a function 
+
+  graph *sample_graph(unsigned int selection)
+
+For 0, 1 and 2 sample_graph will return three different graphs. 
+Read the code to see their characteristics. Running bfs or dfs
+with a number 0, 1, 2 will select a graph and traverse it like so:
+
+  $ ./bfs 0
+  --- graph ---
+  begin graph
+   vertex(0,"x",not done) []
+  end graph
+
+  --- breadth-first search ---
+  [0:"x"]
+
+No argument or an argument out of range will select graph 0.
+
+Run
+
+  $ make clean
+
+to remove everything but the source code.
+
+You can modify the code yourself (see sample_graph) to add your own
+graphs as you see fit.

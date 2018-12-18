@@ -1,0 +1,428 @@
+#lang typed/racket
+
+;;Zack Crenshaw
+;;Final Chess Project
+;;CS 151
+
+(require typed/test-engine/racket-tests)
+(require "../include/cs151-universe.rkt")
+(require "../include/cs151-core.rkt")
+(require "../include/cs151-image.rkt")
+(require "../project1/optional.rkt")
+(require "../project1/loc.rkt")
+(require "chess-logic.rkt")
+(require "chess-graphics.rkt")
+
+
+(define-struct ChessWorld
+  ([game : ChessGame]
+   [size : Integer]
+   [src : (Optional Loc)]
+   [turn : Player]
+   [promotion? : Boolean]
+   [promote-to : (Optional PromoteTo)]))
+
+(: stalemated : ChessGame)
+;;stalemated game
+(define stalemated
+  (ChessGame (strings->board (list "--------"
+                                   "-----R--"
+                                   "--k-----"
+                                   "------R-"
+                                   "-R-R----"
+                                   "--------"
+                                   "--------"
+                                   "--------"))
+             (cast empty (Listof Move))))
+
+(: checkmated : ChessGame)
+;;checkmated game
+(define checkmated
+  (ChessGame (strings->board (list "--------"
+                                   "-----R--"
+                                   "--k--R--"
+                                   "-----R--"
+                                   "-R------"
+                                   "--------"
+                                   "--------"
+                                   "--------"))
+             (cast empty (Listof Move))))
+
+
+              
+
+(: other-player : Player -> Player)
+;;returns the opposite player
+(define (other-player player)
+  (match player
+    ['Black 'White]
+    ['White 'Black]))
+
+(: click->loc : Integer Integer Integer -> (Optional Loc))
+;;translates click location into Loc location
+;;returns 'None if click is invalid or on the same location
+(define (click->loc x y size)
+  (cond
+    [(or (> x (* 8 size))
+         (> y (* 8 size))) 'None]
+    [else (Some (Loc (int->file (floor (/ x size)))
+               (int->rank (- 8 (ceiling (/ y size))))))]))
+
+(: game-near-start : ChessGame)
+;;a chess game near start conditions for testing
+(define game-near-start
+  (ChessGame starting-board (list (Move (Loc 'A 1) (Loc 'A 2)
+                                        (Piece 'Pawn 'White) 'None 'None))))
+
+(: new-chess-world : Integer -> ChessWorld)
+;;generates a new chess world with square size n
+(define (new-chess-world n)
+  (ChessWorld new-game n 'None 'White #f 'None))
+
+(check-expect (new-chess-world 40)
+              (ChessWorld (ChessGame starting-board
+                                     (cast empty (Listof Move)))
+                          40 'None 'White #f 'None))
+                           
+
+(: world-from-game : ChessGame Integer -> ChessWorld)
+;;generates a chess world from saved game with square size n
+(define (world-from-game game n)
+  (ChessWorld game n 'None 
+              (match game
+                [(ChessGame _ moves) (match moves
+                                       ['()'White]
+                                       [(cons first _)
+                                        (match (Piece-color (Move-moved first))
+                                                         ['Black 'White]
+                                                         [_ 'White])])])
+              #f 'None))
+
+(check-expect (world-from-game new-game 50)
+              (new-chess-world 50))
+
+
+(: construct-move : Loc Loc Board (Listof Move) -> Move)
+;;constructs a new move
+;;TODO: PROMOTION
+(define (construct-move src dst b moves)
+  (match (board-ref b src)
+    ['None (error "construct-move: move is invalid (no piece selected)")]
+    [(Some (Piece type player)) (match moves
+                                  ['() (Move src dst (val-of (board-ref b src))
+                                      (board-ref b dst) 'None)]
+                                  [(cons first rest)
+                                    (if (en-passant? (Move src dst (val-of (board-ref b src))
+                                      (board-ref b dst) 'None) first)
+                                        (match (board-ref b src)
+                                          [(Some (Piece _ 'Black))
+                                           (Move src dst (val-of (board-ref b src))
+                                                 (board-ref b
+                                                            (Loc (Loc-file dst)
+                                                                 (val-of (add1-rank (Loc-rank src)))))
+                                                 'None)]
+                                          [(Some (Piece _ 'White))
+                                           (Move src dst (val-of (board-ref b src))
+                                                 (board-ref b
+                                                            (Loc (Loc-file dst)
+                                                                 (val-of (sub1-rank (Loc-rank src)))))
+                                                 'None)])
+                                        (Move src dst (val-of (board-ref b src))
+                                      (board-ref b dst) 'None))])]))
+#|(check-expect (construct-move (Loc 'A 2) (Loc 'A 3) (ChessGame-board new-game) (ChessGame-history new-game))
+                              (Move (Loc 'A 2) (Loc 'A 3) (Piece 'Pawn 'White)
+                                                                'None 'None))
+
+(check-expect (construct-move (Loc 'E 5) (Loc 'D 6)
+  (list
+   (Some (Piece 'Rook 'White))
+   (Some (Piece 'Knight 'White))
+   (Some (Piece 'Bishop 'White))
+   (Some (Piece 'Queen 'White))
+   (Some (Piece 'King 'White))
+   (Some (Piece 'Bishop 'White))
+   (Some (Piece 'Knight 'White))
+   (Some (Piece 'Rook 'White))
+   (Some (Piece 'Pawn 'White))
+   (Some (Piece 'Pawn 'White))
+   (Some (Piece 'Pawn 'White))
+   (Some (Piece 'Pawn 'White))
+   'None
+   (Some (Piece 'Pawn 'White))
+   (Some (Piece 'Pawn 'White))
+   (Some (Piece 'Pawn 'White))
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   (Some (Piece 'Pawn 'Black))
+   (Some (Piece 'Pawn 'White))
+   'None
+   'None
+   'None
+   (Some (Piece 'Knight 'Black))
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   'None
+   (Some (Piece 'Pawn 'Black))
+   (Some (Piece 'Pawn 'Black))
+   (Some (Piece 'Pawn 'Black))
+   'None
+   (Some (Piece 'Pawn 'Black))
+   (Some (Piece 'Pawn 'Black))
+   (Some (Piece 'Pawn 'Black))
+   (Some (Piece 'Pawn 'Black))
+   (Some (Piece 'Rook 'Black))
+   'None
+   (Some (Piece 'Bishop 'Black))
+   (Some (Piece 'Queen 'Black))
+   (Some (Piece 'King 'Black))
+   (Some (Piece 'Bishop 'Black))
+   (Some (Piece 'Knight 'Black))
+   (Some (Piece 'Rook 'Black)))
+  (list
+   (Move (Loc 'D 7) (Loc 'D 5) (Piece 'Pawn 'Black) 'None 'None)
+   (Move (Loc 'E 4) (Loc 'E 5) (Piece 'Pawn 'White) 'None 'None)
+   (Move (Loc 'B 8) (Loc 'A 6) (Piece 'Knight 'Black) 'None 'None)
+   (Move (Loc 'E 2) (Loc 'E 4) (Piece 'Pawn 'White) 'None 'None)))
+              (Move (Loc 'E 5) (Loc 'D 6) (Piece 'Pawn 'White) (Some (Piece 'Pawn 'Black)) 'None))
+  
+|#                                  
+
+
+(: promote-on-key : ChessWorld String -> ChessWorld)
+;;allows user input on promotion
+(define (promote-on-key w s)
+  (match w
+    [(ChessWorld g size src turn promote? promote-to)
+     (if promote?
+         (match s
+           ["b" (ChessWorld g size src turn promote? (Some 'Bishop))]
+           ["n" (ChessWorld g size src turn promote? (Some 'Knight))]
+           ["r" (ChessWorld g size src turn promote? (Some 'Rook))]
+           ["q" (ChessWorld g size src turn promote? (Some 'Queen))]
+           [_ w])
+         w)]))
+
+(: promote?-check : ChessWorld -> ChessWorld)
+;;checks up on promotion status
+;;applies necessary changes
+(define (promote?-check w)
+  (match w
+    [(ChessWorld g size src turn promote? promote-to)
+     (if promote?
+         (match (ChessGame-history g)
+                    ['() w]
+                    [(cons f _) (match promote-to
+                                  ['None (match f
+                                         [(Move _ (Loc file rank)
+                                                (Piece 'Pawn color) _ 'None)
+                                          (if (or
+                                               (and
+                                                (symbol=? color 'Black)
+                                                (= rank 1))
+                                               (and
+                                                (symbol=? color 'White)
+                                                (= rank 8)))
+                                              (ChessWorld g size src turn #t promote-to)
+                                              w)]
+                                         [_ w])]
+                                  ['None w]
+           [_ (ChessWorld (ChessGame
+                           (board-update (ChessGame-board g)
+                                         (Move-dst f)
+                                         (Some (Piece (val-of promote-to) (other-player turn))))
+                           (cons (Move (Move-dst f) (Move-dst f)
+                                       (Piece 'Pawn (other-player turn))
+                                       'None promote-to) (ChessGame-history g)))
+                                size src turn #f 'None)])])
+     (ChessWorld g size src turn (or (check-top g)
+                                     (check-bottom g)) promote-to))]))
+
+(: check-top : ChessGame -> Boolean)
+;;checks if top row has pawns
+(define (check-top g)
+  (match g
+    [(ChessGame board _) (check-row (take 8 board))]))
+
+(: check-bottom : ChessGame -> Boolean)
+;;checks if bottom row has pawns
+(define (check-bottom g)
+  (match g
+    [(ChessGame board _) (check-row (drop 56 board))]))
+
+(: check-row : Board -> Boolean)
+;;checks if row contains a pawn
+(define (check-row b)
+  (ormap (λ ([s : Square]) (match s
+                           [(Some (Piece 'Pawn _)) #t]
+                           [_ #f])) b))
+                             
+
+
+             
+
+(: handle-click : ChessWorld Integer Integer Mouse-Event -> ChessWorld)
+;;handles clicks
+;;functions:
+;; - src selection
+;; - src de-selection
+;; - dst selection
+(define (handle-click world x y event)
+    (match event
+      ["button-down" (match world
+                       [(ChessWorld game size src turn promote? promote-to)
+                        (match game
+                          [(ChessGame b hist)
+                        (local
+                          {(: clicked-loc : (Optional Loc))
+                           (define clicked-loc (click->loc x y size))}
+                        (cond 
+                          [(and (not (single-occ? src))
+                                (if (single-occ? clicked-loc)
+                                    (occ? b (val-of clicked-loc))
+                                    #f))
+                           (ChessWorld game size clicked-loc turn #f 'None)]
+                          [(and (not (single-occ? src))
+                                (if (single-occ? clicked-loc)
+                                    (not (occ? b (val-of clicked-loc)))
+                                    #f))
+                           world]
+                          [(and (single-occ? clicked-loc)
+                            (loc=? (val-of src) (val-of clicked-loc)))
+                           (ChessWorld game size 'None turn #f 'None)]
+                          [(or (> x (* 8 size))
+                               (> y (* 8 size)))  world]
+                          [else
+                           (local
+                             {(: new-move : Move)
+                              (define new-move (construct-move (val-of src) (val-of clicked-loc)
+                                                               (ChessGame-board game) (ChessGame-history game)))}
+                             (if (legal-move? game new-move) ;; legal-move? technically in here twice bc of apply-move
+                                 (ChessWorld (apply-move game new-move)
+                                             size 'None (other-player turn) #f 'None)
+                                 world))]))])])]
+                          [_ world]))
+
+
+(: draw-chess-world : ChessWorld -> Image)
+;;draws the chess world
+;;overlays a square to show selection
+(define (draw-chess-world world)
+  (match world
+    [(ChessWorld game size src turn promotion? promote-to)
+     (local {(: size/2 : Byte)
+             (define size/2 (cast (exact-ceiling (/ size 2)) Byte))
+               (: byte-size : Byte)
+             (define byte-size (cast size Byte))}
+       (above (if (single-occ? src)
+                  (place-image
+                   (square size "solid" (color 100 100 100 60))
+                   (- (* size (add1 (file->int (Loc-file (val-of src))))) size/2)
+                   (- (* size (- 8 (rank->int (Loc-rank (val-of src))))) size/2)
+                   (board->image-variable (ChessGame-board game) size))
+                  (board->image-variable (ChessGame-board game) size))
+              (square size "solid" "white")
+              (if promotion?
+                  (above
+                   (text "Type a piece to promote the pawn:" size/2 "black")
+                   (square size/2 "solid" "white")
+                   (if (symbol=? turn 'Black)
+                        (promote->image (strings->board (list "B" "N" "R" "Q")) size)
+                        (promote->image (strings->board (list "b" "n" "r" "q")) size))
+                   (square size/2 "solid" "white")
+                   (beside
+                    (text "q" byte-size "black")
+                    (square size/2 "solid" "white")
+                    (text "r" byte-size "black")
+                    (square size/2 "solid" "white")
+                    (text "n" byte-size "black")
+                    (square size/2 "solid" "white")
+                    (text "b" byte-size "black"))
+                   (square size/2 "solid" "white"))
+                  (square (* byte-size 3) "solid" "white"))
+              (cond
+                [(stalemate? game) (text "STALEMATE" size/2 "black")]
+                [(checkmate? game) (text (string-append
+                                          "CHECKMATE"
+                                          (match turn
+                                            ['Black "   WHITE WINS"]
+                                            ['White "   BLACK WINS"]))
+                                         size/2 "black")]
+                [(in-check? game) (above
+                                   (text
+                                    (string-append
+                                     "It's "
+                                     (symbol->string turn)
+                                     "'s turn.") size/2 "black")
+                                   (text
+                                    (string-append
+                                     (symbol->string turn) " is in CHECK")
+                                    size/2 "black"))]
+                [else (text
+                       (string-append
+                        "It's "
+                        (symbol->string turn)
+                        "'s turn.") size/2 "black")])
+              (square size "solid" "white")))]))
+
+;(: pieces-moved? : ChessWorld -> ChessWorld)
+;;;checks if rooks or king has moved
+;(define (pieces-moved? w)
+;  (match w
+;    ;;on tick, check last item in list
+;    ;;if moving king or rook (at certain position) then make true
+                                                                   
+          
+#|(draw-chess-world (new-chess-world 30))
+(draw-chess-world (ChessWorld new-game 40 (Some (Loc 'A '2)) 'White #f 'None))
+(draw-chess-world (ChessWorld stalemated 30 'None 'White #f 'None)) 
+(draw-chess-world (ChessWorld checkmated 30 'None 'White #f 'None))
+(draw-chess-world (ChessWorld new-game 30 'None 'White #t 'None))
+|#
+
+
+(: play-new : Integer -> ChessWorld)
+;;runs world from fresh world
+(define (play-new n)
+  (if (< n 30) (error "play-new: size too small")
+      (run (new-chess-world n))))
+
+(: play-from : ChessGame Integer -> ChessWorld)
+;;runs world from saved game
+(define (play-from g n)
+  (if (< n 30) (error "play-new: size too small")
+      (run (world-from-game g n))))
+
+(: run : ChessWorld -> ChessWorld)
+;;runs the universe
+(define (run w)
+  (big-bang w : ChessWorld
+            [to-draw draw-chess-world]
+            [on-mouse handle-click]
+            [on-key promote-on-key]
+            [on-tick promote?-check 8]))
+            
+
+
+
+(test)
