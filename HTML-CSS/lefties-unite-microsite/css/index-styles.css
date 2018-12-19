@@ -1,0 +1,331 @@
+    
+/* ---- RESET ---- */
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* --- END RESET --- */
+
+/* DESIGN IDEAS 
+
+- FADING BACKGROUND
+
+
+
+
+*/
+
+
+/* ----- PAGE CSS ------ */
+
+#page {
+    font-family: Tahoma, Verdana, sans-serif; /* font stack */
+    display: flex;
+    justify-content: center;
+    
+    background: linear-gradient(var(--theme-blue), var(--theme-blue-fade),var(--theme-green-fade),var(--theme-gold-fade),var(--theme-red-fade),var(--theme-red-footer));
+    width: 100%;
+
+}
+
+#content {
+    max-width: 1024px;
+    
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    
+    margin: 0em 1em;
+    
+    position: relative;
+    top: 3em;
+    
+    
+}
+
+h3 {
+    font-size: 2em;
+    margin-bottom: .3em;
+    width: 100%;
+}
+
+p {
+    font-size: 1em;
+    line-height: 1.15em;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+section {
+    margin-bottom: 2em;
+    width: 100%;
+    padding: 2em;
+}
+
+figure {
+    margin-bottom: 2em;
+}
+
+figcaption {
+    font-size: .9em;
+    font-style: italic;
+    margin-top: .45em;
+}
+
+
+#what figcaption {
+    font-style: normal;
+}
+
+/* --- SPECIFIC SECTIONS --- */
+
+/* NAV */
+
+nav {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    z-index: 10;
+    background: var(--theme-nav-blue);
+}
+
+nav ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 2em;
+    width: 50%;
+}
+nav li {
+    list-style: none;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+
+/* HEADER */
+
+header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    
+/*    background: linear-gradient(rgba(5,104,255,1),rgba(5,104,255,.1));*/
+}
+
+h1 {
+    display: flex;
+    justify-content: center;
+    font-size: 6em;
+    width: 100%;
+    text-decoration: underline;
+    margin-bottom: .2em;
+    color: black;
+}
+
+h2 {
+    display: flex;
+    justify-content: center;
+    font-size: 4em;
+    width: 100%;
+    color: black;
+    
+}
+
+em {
+    font-style: italic;
+    margin: 0em .25em;
+}
+
+header img {
+    margin: 2em 0em 3em 0em;
+    
+}
+
+/* WHY */
+
+#why {
+    border: solid;
+    border-color: var(--theme-blue);
+    background-color: var(--theme-blue-fade);
+}
+
+/* HISTORY */
+
+#when {
+    border: solid;
+    border-color: var(--theme-green);
+    background-color: var(--theme-green-fade);
+    
+}
+
+/* NOTABLES */
+
+#who {
+    border: solid;
+    border-color: rgb(245,210,0);
+    background-color: rgba(232,200,0,.1);
+}
+
+h4 {
+    font-size: 1.25em;
+    margin: .3em 0em;
+    font-style: italic;
+}
+
+#people  {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.person {
+    max-width: 250px;
+    padding: 1em;
+    margin-right: .2em;
+    border: solid;
+    border-color: var(--theme-gold-fade);
+}
+
+
+
+/* PRODUCTS */
+
+#what {
+    border: solid;
+    border-color: var(--theme-red);
+    background-color: var(--theme-red-fade);
+}
+
+#products  {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.product {
+    max-width: 250px;
+    padding: 1em;
+    margin-right: .2em;
+    border: solid;
+    border-color: var(--theme-red-fade);
+}
+
+
+/* FOOTER */
+
+footer {
+    display: flex;
+    background-color: rgb(5,104,255));
+}
+
+footer #secret {
+    color: rgba(5,104,255,0); 
+    z-index: -100;
+}
+
+/* COLOR HOLDER */
+
+
+body {
+
+--theme-blue: rgb(5,104,255);
+--theme-blue-fade: rgba(5,104,255,.2);
+--theme-green: rgb(78,255,0);
+--theme-green-fade: rgba(78,255,0,.2);
+--theme-gold: rgb(232,200,0);
+--theme-gold-fade: rgba(232,200,0,.2);
+--theme-red: rgb(255,128,2);
+--theme-red-fade: rgba(255,128,2,.2);
+--theme-red-footer: rgba(255,128,2,.75);
+--theme-teal: rgb(12,232,166);
+--theme-nav-blue: rgb(5,110,255);
+    
+}
+
+
+
+
+
+/* --- REMOVE BEFORE PUBLISHING ---*/
+
+/*
+#color-test div {
+    height: 50px;
+    width: 50px;
+}
+
+#green {
+    background-color: rgb(78,235,0);
+}
+
+#blue {
+    background-color: rgb(5,104,255);
+}
+#gold {
+background-color:  rgb(245,210,0);
+    
+}
+*/
+
+
+
+
+
