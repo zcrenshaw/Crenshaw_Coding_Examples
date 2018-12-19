@@ -1,0 +1,13 @@
+English%English
+Español%Spanish
+Português%Portuguese
+Français%French
+Italiano%Italian
+Deutsch%German
+Svenska%Swedish
+Русский%Russian
+Polski%Polish
+Română%Romanian
+Čeština%Czech
+Ελληνικά%Greek
+Türkçe%Turkish
