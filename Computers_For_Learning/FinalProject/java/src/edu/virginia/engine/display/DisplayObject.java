@@ -165,7 +165,6 @@ public class DisplayObject extends SoundManager{
 
 		Shape newshape = tx.createTransformedShape(shape);
 		this.hitbox = newshape;
-		//System.out.println("Mario's height: "+this.getUnscaledHeight()*this.getScaleX());
 
 	}
 
@@ -244,7 +243,6 @@ public class DisplayObject extends SoundManager{
 			 */
 			Graphics2D g2d = (Graphics2D) g;
 
-			//g2d.draw(this.hitbox);
 			applyTransformations(g2d);
 			/* Actually draw the image, perform the pivot point translation here */
 
@@ -257,14 +255,12 @@ public class DisplayObject extends SoundManager{
 
 
 			
-			//g2d.draw(this.hitbox);
 			/*
 			 * undo the transformations so this doesn't affect other display
 			 * objects
 			 */
 			reverseTransformations(g2d);
 
-			//g2d.draw(this.hitbox);
 		}
 	}
 
@@ -273,7 +269,6 @@ public class DisplayObject extends SoundManager{
 	 * object
 	 * */
 	protected void applyTransformations(Graphics2D g2d) {
-		//g2d.translate(this.getPivotPoint().getX(),this.getPivotPoint().getY());
 		g2d.translate(this.position.x, this.position.y);
 		g2d.rotate(Math.toRadians(this.Rotation), this.pivotPoint.x, this.pivotPoint.y);
 		g2d.scale(this.scaleX, this.scaleY);
@@ -293,7 +288,6 @@ public class DisplayObject extends SoundManager{
 		g2d.scale(1.0/this.scaleX,1.0/this.scaleY);
 		g2d.rotate(Math.toRadians(360 - this.Rotation), this.pivotPoint.x, this.pivotPoint.y);
 		g2d.translate(-this.position.x,-this.position.y);
-		//g2d.translate(-this.getPivotPoint().getX(),-this.getPivotPoint().getY());
 	}
 
 	public Point getPosition(){

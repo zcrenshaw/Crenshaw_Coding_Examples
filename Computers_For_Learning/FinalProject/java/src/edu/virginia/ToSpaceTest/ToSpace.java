@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.awt.event.*;
 import java.awt.Point;
 import java.awt.*;
-import java.util.Collection;
-import java.util.Locale;
-import javax.swing.*;
 
 import edu.virginia.engine.display.*;
 
@@ -43,7 +40,7 @@ public class ToSpace extends Game implements MouseListener {
 	Sprite settings_menu = new Sprite("settings_menu","gear.png", new Point(900,305));
 	Sprite help_menu = new Sprite("help_menu","help.png", new Point(880,345));
 
-	//ArrayList<Integer> checkpoints = init_checkpoints();
+
 
 
 	private float highscore = 0;
@@ -70,7 +67,6 @@ public class ToSpace extends Game implements MouseListener {
 	private int gamestate = 0;
 	private int lastGamestate = 0;
 	private int textstate = 0;
-	private int lastTextstate = textstate;
 	private boolean allowContinue = true;
 
 
@@ -152,34 +148,21 @@ public class ToSpace extends Game implements MouseListener {
 
 		sounds.PlayMusic(MusicToString(music));
 
-
-/*
-		Collection check = esp_texts.getValues();
-		int i = 0;
-		for (Object s : check) {
-			System.out.println(""+ i++ +s);
-		}
-*/
-
 	}
 
 
 	public void mute() {
 		//sound button
-		//System.out.println("SOUND BUTTON");
 		sounds.toggleMute();
-		//System.out.println(sounds.getSoundon());
 
 	}
 
 	public void reset() {
 		//reset button
-		//System.out.println("RESET BUTTON");
 		gamestate=0;
 		curheight = 0;
 		allowContinue = true;
 		speed = DEFAULT_SPEED;
-		//textstate = lastTextstate;
 		sounds.StopSound("text"+textstate+LanguagetoString(language));
 		if(textstate < 8) textstate = 0;
 		else if (textstate < 17) textstate = 8;
@@ -187,13 +170,12 @@ public class ToSpace extends Game implements MouseListener {
 		else if (textstate <23) textstate = 19;
 		else if (textstate <27) textstate = 23;
 		else if(textstate == 27) textstate = 22;
-		//attempts++;
 		gamestate = 0;
 		launchstate = 0;
 		rocket.stopAnimation(0);
 		sounds.StopSound("launched");
 		if (text_to_speech)
-			sounds.PlaySoundEffect("reset");
+			sounds.PlaySoundEffect("reset"+LanguagetoString(language));
 			Sleep(400);
 
 
@@ -202,23 +184,21 @@ public class ToSpace extends Game implements MouseListener {
 
 	public void settings() {
 		//settings button
-		//System.out.println("SETTINGS BUTTON");
-		if (gamestate != 3)
+		if (gamestate < 2)
 			lastGamestate = gamestate;
 		gamestate = 2;
 		if (text_to_speech)
-			sounds.PlaySoundEffect("settings");
+			sounds.PlaySoundEffect("settings"+LanguagetoString(language));
 
 	}
 
 	public void help() {
 		//help button
-		//System.out.println("HELP BUTTON");
-		if (gamestate != 2)
+		if (gamestate < 2)
 			lastGamestate = gamestate;
 		gamestate = 3;
 		if (text_to_speech)
-			sounds.PlaySoundEffect("help");
+			sounds.PlaySoundEffect("help"+LanguagetoString(language));
 
 	}
 
@@ -232,7 +212,6 @@ public class ToSpace extends Game implements MouseListener {
 			maxheight = 0;
 			time = 0;
 			readHeight = true;
-			//startspeed = speed*5;
 		}
 	}
 
@@ -241,8 +220,6 @@ public class ToSpace extends Game implements MouseListener {
 		if (textstate == 5 || textstate == 10) { //Intro adding fuel whole piece
 				textstate++;
 				solidfuelselect++;
-				//liquidfuelselect++;
-				//System.out.println(textstate);
 			change = true;
 			}
 
@@ -276,7 +253,7 @@ public class ToSpace extends Game implements MouseListener {
 		if (change && text_to_speech) {
 			sounds.StopSound("text"+(textstate-1)+LanguagetoString(language));
 			sounds.StopSound("text"+textstate+LanguagetoString(language));
-			sounds.PlaySoundEffect("added");
+			sounds.PlaySoundEffect("added"+LanguagetoString(language));
 			Sleep(1200);
 		}
 
@@ -305,19 +282,36 @@ public class ToSpace extends Game implements MouseListener {
 			sounds.PlayMusic(MusicToString(music));
 	}
 
+	public void switchLanguageTo(Language lang) {
+		if (language != lang) {
+			if (gamestate == 3) {
+				sounds.StopSound("help"+LanguagetoString(language));
+				sounds.PlaySoundEffect("help"+LanguagetoString(lang));
+			}
+
+			else if (gamestate == 2) {
+				sounds.StopSound("settings"+LanguagetoString(language));
+				sounds.PlaySoundEffect("settings"+LanguagetoString(lang));
+			} else {
+				sounds.StopSound("text" + textstate + LanguagetoString(language));
+			}
+
+			language = lang;
+		}
+
+
+
+	}
+
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		mousePos = new Point(e.getX(),e.getY());
-		//mousePos = new Point(SwingUtilities.convertPointFromScreen(MouseInfo.getPointerInfo().getLocation(), component));
-		//System.out.println(mousePos);
-
-		//System.out.println(mousePos.getX() + " , " + mousePos.getY());
 
 		if (gamestate == 2 ){ //settings
 			if (mousePos.getX() > 135 && mousePos.getX() < 365 &&
 					mousePos.y > 640 && mousePos.y < 700) {
 				gamestate = lastGamestate;
-				//System.out.println("BACK TO GAME");
 			}
 
 			if (mousePos.getX() > 310 && mousePos.getX() < 330 &&
@@ -333,18 +327,14 @@ public class ToSpace extends Game implements MouseListener {
 			if (mousePos.getX() > 310 && mousePos.getX() < 330 &&
 					mousePos.getY() > 265 && mousePos.getY() < 285) {
 				if (language != Language.ENGLISH) { //set language to english
-					sounds.StopSound("text" + textstate + LanguagetoString(language));
-					//System.out.println("text"+textstate+LanguagetoString(language));
-					language = Language.ENGLISH;
+					switchLanguageTo(Language.ENGLISH);
 				}
 			}
 
 			if (mousePos.getX() > 400 && mousePos.getX() < 420 &&
 					mousePos.getY() > 265 && mousePos.getY() < 285) {
 				if (language != Language.SPANISH) { //set language to english
-					sounds.StopSound("text" + textstate + LanguagetoString(language));
-					//System.out.println("text"+textstate+LanguagetoString(language));
-					language = Language.SPANISH;
+					switchLanguageTo(Language.SPANISH);
 				}
 			}
 
@@ -389,7 +379,6 @@ public class ToSpace extends Game implements MouseListener {
 			if (mousePos.getX() > 135 && mousePos.getX() < 365 &&
 					mousePos.y > 640 && mousePos.y < 700) {
 				gamestate = lastGamestate;
-				//System.out.println("BACK TO GAME");
 			}
 
 
@@ -420,8 +409,6 @@ public class ToSpace extends Game implements MouseListener {
 				if (textstate == 5 || textstate == 10) { //Intro adding fuel whole piece
 					textstate++;
 					solidfuelselect++;
-					//liquidfuelselect++;
-					//System.out.println(textstate);
 				}
 			}
 
@@ -493,12 +480,11 @@ public class ToSpace extends Game implements MouseListener {
 		super.update(pressedKeys);
 
 		if (gamestate != 3) {
-			//System.out.println("here!");
-			sounds.StopSound("help");
+			sounds.StopSound("help"+LanguagetoString(language));
 		}
 
 		if (gamestate != 2) {
-			sounds.StopSound("settings");
+			sounds.StopSound("settings"+LanguagetoString(language));
 		}
 
 		if (launchstate == 1) {
@@ -525,31 +511,24 @@ public class ToSpace extends Game implements MouseListener {
 			Sleep(400);
 		}
 		if (pressedKeys.contains(KeyEvent.VK_T)) {
-			//System.out.println("TTS");
 				text_to_speech = !text_to_speech;
-				sounds.StopSound("text"+textstate+LanguagetoString(language));
+				if (!text_to_speech)
+					sounds.StopSound("text"+textstate+LanguagetoString(language));
 				Sleep(400);
 
 		}
 
 			if (pressedKeys.contains(KeyEvent.VK_E)) {
-				//System.out.println(language);
-				//System.out.println("switch");
 				if (language != Language.ENGLISH) {
-					sounds.StopSound("text" + textstate + LanguagetoString(language));
-					//System.out.println("text"+textstate+LanguagetoString(language));
-					language = Language.ENGLISH;
+					switchLanguageTo(Language.ENGLISH);
 					Sleep(400);
 				}
 			}
 
 			if (pressedKeys.contains(KeyEvent.VK_N)) {
-				//System.out.println(language);
 
 				if (language != Language.SPANISH) {
-					sounds.StopSound("text" + textstate + LanguagetoString(language));
-					//System.out.println("text"+textstate+LanguagetoString(language));
-					language = Language.SPANISH;
+					switchLanguageTo(Language.SPANISH);
 					Sleep(400);
 				}
 			}
@@ -630,7 +609,6 @@ public class ToSpace extends Game implements MouseListener {
 
 				if (pressedKeys.contains(KeyEvent.VK_SPACE)) {
 					textstate++;
-					//System.out.println("Text State: " + textstate);
 
 					Sleep(400);
 
@@ -652,7 +630,7 @@ public class ToSpace extends Game implements MouseListener {
 						solidfuelsplit = 2;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split2");
+							sounds.PlaySoundEffect("split2"+LanguagetoString(language));
 							Sleep(2000);
 						}
 					}
@@ -660,7 +638,7 @@ public class ToSpace extends Game implements MouseListener {
 						solidfuelsplit = 3;
 						if (text_to_speech) {
 							sounds.StopSound("text" + textstate + LanguagetoString(language));
-							sounds.PlaySoundEffect("split3");
+							sounds.PlaySoundEffect("split3"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -669,7 +647,7 @@ public class ToSpace extends Game implements MouseListener {
 						solidfuelsplit = 4;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split4");
+							sounds.PlaySoundEffect("split4"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -678,7 +656,7 @@ public class ToSpace extends Game implements MouseListener {
 						solidfuelsplit = 5;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split5");
+							sounds.PlaySoundEffect("split5"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -687,7 +665,7 @@ public class ToSpace extends Game implements MouseListener {
 						solidfuelsplit = 6;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split6");
+							sounds.PlaySoundEffect("split6"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -696,7 +674,7 @@ public class ToSpace extends Game implements MouseListener {
 						solidfuelsplit = 7;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split7");
+							sounds.PlaySoundEffect("split7"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -705,7 +683,7 @@ public class ToSpace extends Game implements MouseListener {
 						solidfuelsplit = 8;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split8");
+							sounds.PlaySoundEffect("split8"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -719,7 +697,7 @@ public class ToSpace extends Game implements MouseListener {
 						liquidfuelsplit = 2;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split2");
+							sounds.PlaySoundEffect("split2"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -728,7 +706,7 @@ public class ToSpace extends Game implements MouseListener {
 						liquidfuelsplit = 3;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split3");
+							sounds.PlaySoundEffect("split3"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -737,7 +715,7 @@ public class ToSpace extends Game implements MouseListener {
 						liquidfuelsplit = 4;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split4");
+							sounds.PlaySoundEffect("split4"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -746,7 +724,7 @@ public class ToSpace extends Game implements MouseListener {
 						liquidfuelsplit = 5;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split5");
+							sounds.PlaySoundEffect("split5"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -755,7 +733,7 @@ public class ToSpace extends Game implements MouseListener {
 						liquidfuelsplit = 6;
 						if (text_to_speech) {
 							sounds.StopSound("text"+textstate+LanguagetoString(language));
-							sounds.PlaySoundEffect("split6");
+							sounds.PlaySoundEffect("split6"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -764,7 +742,7 @@ public class ToSpace extends Game implements MouseListener {
 						liquidfuelsplit = 7;
 						if (text_to_speech) {
 							sounds.StopSound("text" + textstate + LanguagetoString(language));
-							sounds.PlaySoundEffect("split7");
+							sounds.PlaySoundEffect("split7"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
@@ -773,27 +751,19 @@ public class ToSpace extends Game implements MouseListener {
 						liquidfuelsplit = 8;
 						if (text_to_speech) {
 							sounds.StopSound("text" + textstate + LanguagetoString(language));
-							sounds.PlaySoundEffect("split8");
+							sounds.PlaySoundEffect("split8"+LanguagetoString(language));
 							Sleep(2000);
 
 						}
 					}
 				}
 			}
-/*
-		if (checkpoints.contains(textstate)) {
-			lastTextstate = textstate;
-		}
-
-
-*/
 
 			if (gamestate == 1) {
-				//readHeight = true;
+
 				time++;
 
 				curheight = 3950 + (float) background.getPosition().getY();
-				//System.out.println(background.getY());
 
 
 				if (maxheight < curheight) {
@@ -803,15 +773,10 @@ public class ToSpace extends Game implements MouseListener {
 				if (highscore < maxheight) {
 					highscore = maxheight;
 				}
-				System.out.println("time: "+ time+ " , speed: "+speed+ " , expected max: "+ startspeed);
-				System.out.println(maxheight);
-				//if (time == startspeed && text_to_speech) {
-				if (readHeight && (maxheight > curheight) && text_to_speech) {
+				if (readHeight && (maxheight > curheight) && text_to_speech && readHeight) {
 					readHeight = false;
-					//System.out.println("text" + textstate + LanguagetoString(language));
 					String mh = new String(String.valueOf(maxheight));
-					sounds.ReadHeight(mh,"text"+(textstate)+LanguagetoString(language));
-					//Sleep(mh.length()*500);
+					sounds.ReadHeight(mh,textstate,LanguagetoString(language));
 				}
 
 
@@ -828,8 +793,6 @@ public class ToSpace extends Game implements MouseListener {
 	public void draw(Graphics g) {
 		super.draw(g);
 
-
-		//System.out.println(speed);
 
 		if (background != null) background.draw(g);
 
@@ -873,9 +836,9 @@ public class ToSpace extends Game implements MouseListener {
 				g.drawString("Ayuda:\t\t H o",730,370);
 				g.drawString("Añadir combustible:\t\t A o presiónalo",730,410);
 				g.drawString("Lanzar:\t\t L o",730,450);
-				g.drawString("Texto a habla:\t\t T (alternar)",730,490);
-				g.drawString("Idioma:\t\t E para ENGLISH, N para ESPAÑOL",730,530);
-				g.drawString("Música:\t\t Z: Hip-Hop, X: Electrónica ",730,570);
+				g.drawString("Texto a voz:\t\t T (alternar)",730,490);
+				g.drawString("Idioma:\t\t E para English, o N para Español",730,530);
+				g.drawString("Música:\t\tZ: Hip-Hop, X: Electrónica ",730,570);
 				g.drawString("C: Pop, V: Rock", 795, 590);
 				g.drawString("Silenciar música:\t\tK", 795, 610);
 				g.drawString("Esconder estadísticas\t\t: B",730, 650);
@@ -887,14 +850,14 @@ public class ToSpace extends Game implements MouseListener {
 			} else {
 				g.drawString("Mute:\t\t M or",730,250);
 				g.drawString("Reset:\t\t R or",730,290);
-				g.drawString("Setings:\t\t S or",730,330);
+				g.drawString("Settings:\t\t S or",730,330);
 				g.drawString("Help:\t\t H or",730,370);
 				g.drawString("Add fuel:\t\t A or click fuel",730,410);
 				g.drawString("Launch:\t\t L or",730,450);
 				g.drawString("Text to Speech:\t\t T (toggles)",730,490);
-				g.drawString("Language:\t\t E for ENGLISH, N for ESPAÑOL",730,530);
+				g.drawString("Language:\t\t E for English, N for Español",730,530);
 				g.drawString("Music:\t\t Z: Hip-Hop, X: Electronic ",730,570);
-				g.drawString("C: Pop, V: Rock", 795, 590);
+				g.drawString("C: Pop, o V: Rock", 795, 590);
 				g.drawString("Mute music\t\t: K", 795, 610);
 				g.drawString("Hide stats box\t\t: B",730, 650);
 				g.drawString("Back to Game:\t\t ESC",730,690);
@@ -925,7 +888,7 @@ public class ToSpace extends Game implements MouseListener {
 					g.drawString("VOLVER AL JUEGO", 130, 650);
 
 					g.setFont(textbox);
-					g.drawString("Texto a Habla", 125, 180);
+					g.drawString("Texto a voz", 125, 180);
 					g.drawString("SÍ", 310, 210);
 					g.drawString("NO", 400, 210);
 
@@ -1041,33 +1004,33 @@ public class ToSpace extends Game implements MouseListener {
 				g.setFont(settings_font);
 
 				if (language == Language.SPANISH) {
-					g.drawString("Sigue las instrucciones de Dra. Stevens", 125, 175);
-					g.drawString("Si hay combustible en la pantalla" +
-							"presiona encima de él ", 125, 225);
+					g.drawString("Sigue las instrucciones de Dra. Stevens.", 125, 175);
+					g.drawString("Si hay combustible en la pantalla " +
+							"presiona encima de él. ", 125, 225);
 					g.drawString("o presiona A para añadirlo en el cohete.",125,245);
-					g.drawString("Cuando aparezca el botón de lanzamiento" +
+					g.drawString("Cuando aparezca el botón de lanzamiento " +
 									"presiónalo o", 125, 275);
-					g.drawString("presiona L para lanzar el cohete",125,295);
-					g.drawString("Sigue probando cantidades diferentes de combustible " +
+					g.drawString("presiona L para lanzar el cohete.",125,295);
+					g.drawString("Sigue probando diferentes cantidades de combustible " +
 							"para llegar", 125, 325);
 					g.drawString("a la luna!", 125, 345);
 
-					g.drawString("Presiona el símbolo de altavoz para alternar el silencio" , 125, 375);
-					g.drawString("Presiona la flecha hacia atrás para reiniciar un nivel", 125, 425);
-					g.drawString("Presiona el engranje para abrir la configuración", 125, 475);
-					g.drawString("Presiona el signo de interrogación para ayuda", 125, 525);
+					g.drawString("Presiona el símbolo de altavoz para alternar el silencio." , 125, 400);
+					g.drawString("Presiona la flecha hacia atrás para reiniciar un nivel.", 125, 450);
+					g.drawString("Presiona el engranaje para abrir la configuración.", 125, 500);
+					g.drawString("Presiona el signo de interrogación para ayuda.", 125, 550);
 
 				} else {
-					g.drawString("Keep following Dr. Stevens' instructions", 125, 175);
+					g.drawString("Keep following Dr. Stevens' instructions.", 125, 175);
 					g.drawString("If there is fuel on the screen" +
-							"click it or press A to add it to the rocket", 125, 225);
-					g.drawString("When the launch button appears, hit it or press L to launch the rocket", 125, 275);
+							"click it or press A to add it to the rocket.", 125, 225);
+					g.drawString("When the launch button appears, hit it or press L to launch the rocket.", 125, 275);
 					g.drawString("Keep experimenting with the amounts of fuels " +
 							"to get to the moon!", 125, 325);
-					g.drawString("Press the speaker symbol to toggle mute", 125, 375);
-					g.drawString("Press the backwards bendy arrow to restart a level", 125, 425);
-					g.drawString("Press the gear button to open the settings", 125, 475);
-					g.drawString("Press the question mark button to get help", 125, 525);
+					g.drawString("Press the speaker symbol to toggle mute.", 125, 400);
+					g.drawString("Press the backwards bendy arrow to restart a level.", 125, 450);
+					g.drawString("Press the gear button to open the settings.", 125, 500);
+					g.drawString("Press the question mark button to get help.", 125, 550);
 				}
 
 				g.setFont(statsheading);
@@ -1173,26 +1136,15 @@ public class ToSpace extends Game implements MouseListener {
 			switch (language) {
 				case SPANISH :
 					printText(esp_texts.GetText(textstate), g, 270, 625, textbox.getSize() + 5);
-
 					break;
 				default : printText(eng_texts.GetText(textstate), g, 270, 625, textbox.getSize() + 5);
 
 			}
 			if (text_to_speech)
-				switch (textstate) {
-					case 13: break;
-					case 15: break;
-					case 22: break;
-					case 25: break;
-					default:sounds.PlayTTS(textstate, LanguagetoString(language));
-				}
+					sounds.PlayTTS(textstate, LanguagetoString(language),0);
 
 
-
-
-
-
-			/* Same, just check for null in case a frame gets thrown in before things are initialized */
+			/* just check for null in case a frame gets thrown in before things are initialized */
 			if (settings != null) settings.draw(g);
 			if (help != null) help.draw(g);
 			if (reset != null) reset.draw(g);
@@ -1226,7 +1178,7 @@ public class ToSpace extends Game implements MouseListener {
 			if(textstate > 22) level = 4;
 
 
-			if( (textstate > 1 && textstate < 6) || (textstate > 7 && textstate < 10) ) { //Intro to Ignemium
+			if( (textstate > 1 && textstate < 6) || (textstate > 7 && textstate < 10) ) { //Intro to Ingenium
 				solidwhole.draw(g);
 				g.setColor(Color.black);
 				g.drawString("Ingenium", 640, 300);
@@ -1256,9 +1208,7 @@ public class ToSpace extends Game implements MouseListener {
 
 
 			if (textstate == 7) { //Launch with full solid
-				//gamestate = 1;
 				launch();
-				//attempts = 1;
 			}
 
 			if (textstate == 8) {
@@ -1304,9 +1254,7 @@ public class ToSpace extends Game implements MouseListener {
 			}
 
 			if (textstate == 12) { //Launch with half
-				//gamestate = 1;
 				launch();
-				//	attempts=2;
 			}
 
 			if (textstate == 13) { //One frame to reset solid select
@@ -1691,7 +1639,6 @@ public class ToSpace extends Game implements MouseListener {
 
 			if (textstate == 15) { //One frame: Used to iterate speed once
 				allowContinue = false;
-				//attempts++;
 				if (((float) solidfuelselect / solidfuelsplit > .2f) && ((float) solidfuelselect / solidfuelsplit <= .4f))
 					speed = 33; //1/3 or 2/7 or 2/5 or 1/4 or 3/8s
 				else speed = 27;
@@ -1699,7 +1646,6 @@ public class ToSpace extends Game implements MouseListener {
 			}
 
 			if (textstate == 16) //Launches
-				//gamestate = 1;
 				launch();
 
 			if (textstate == 17) //If didn't make it
@@ -1786,7 +1732,6 @@ public class ToSpace extends Game implements MouseListener {
 			}
 
 			if (textstate == 21) { //Launches
-				//gamestate = 1;
 				launch();
 			}
 
@@ -1831,7 +1776,6 @@ public class ToSpace extends Game implements MouseListener {
 			}
 
 			if (textstate == 26) { //Launching
-				//gamestate = 1;
 				launch();
 			}
 
@@ -1863,7 +1807,6 @@ public class ToSpace extends Game implements MouseListener {
 					if (speed > -60)
 						speed -= gravity;
 				} else {
-					//System.out.println("end me");
 					rocket.stopAnimation(0);
 					sounds.StopSound("launched");
 
@@ -1883,8 +1826,6 @@ public class ToSpace extends Game implements MouseListener {
 						gamestate = -1;
 						if (textstate == 26 && maxheight > 3400) textstate += 2; //If made it to the moon
 					}
-					// The End
-					//System.out.println(rocket.getCurrentFrame());
 				}
 
 
@@ -1893,16 +1834,6 @@ public class ToSpace extends Game implements MouseListener {
 
 
 
-	}
-
-	private ArrayList<Integer> init_checkpoints() {
-		ArrayList<Integer> list = new ArrayList<>();
-
-		list.add(5);
-		list.add(6);
-		list.add(10);
-
-		return list;
 	}
 
 

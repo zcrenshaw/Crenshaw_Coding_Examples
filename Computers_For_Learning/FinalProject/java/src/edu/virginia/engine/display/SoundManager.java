@@ -58,7 +58,17 @@ public class SoundManager extends TextManager {
 
     }
 
-    public void PlayTTS(int textstate, String lang) {
+    public void PlaySoundEffect(String id, int FramePos) {
+        Clip effect = (Clip)soundFX.get(id);
+        if (effect.isRunning()) {
+            effect.stop();
+        }
+        effect.setFramePosition(FramePos);
+        effect.start();
+
+    }
+
+    public void PlayTTS(int textstate, String lang, int FramePos) {
         String curr = "text"+textstate+lang;
 
         Clip effect = (Clip)soundFX.get(curr);
@@ -70,26 +80,19 @@ public class SoundManager extends TextManager {
             effect.setFramePosition(0);
             effect.start();
         } else { //if not at start, must stop previous tts
-            String prev = new String();
-            switch (textstate) {
-                case 14: prev = "text"+(textstate-2)+lang; break;
-                case 16: prev = "text"+(textstate-2)+lang; break;
-                case 23: prev = "text"+(textstate-2)+lang; break;
-                case 26: prev = "text"+(textstate-2)+lang; break;
-                default: prev = "text"+(textstate-1)+lang;
-            }
+            String prev = "text"+(textstate-1)+lang;
             Clip prev_effect = (Clip)soundFX.get(prev);
 
             if (prev_effect.isRunning()){ //if previous tts is running, stop it and start the new
                 prev_effect.stop();
                 prev_effect.setFramePosition(0);
-                effect.setFramePosition(0);
+                effect.setFramePosition(FramePos);
                 effect.start();
             } else { //if prev tts is not running
                 if (effect.isRunning()){ // if current tts is running, return
                     return;
                 } else {  //if current tts is not running, start it (NOTE: will generate a loop)
-                    effect.setFramePosition(0);
+                    effect.setFramePosition(FramePos);
                     effect.start();
                 }
             }
@@ -122,6 +125,11 @@ public class SoundManager extends TextManager {
             sound.stop();
         }
 
+    }
+
+    public int getFramePosition(String id) {
+        Clip music = (Clip)soundFX.get(id);
+        return music.getFramePosition();
     }
 
     public boolean getSoundon() {
@@ -158,46 +166,43 @@ public class SoundManager extends TextManager {
         LoadMusic("POP","starships.wav");
         LoadMusic("ROCK","muse.wav");
         LoadSoundEffect("launched", "launched.wav");
-        LoadSoundEffect("added","added.wav");
-        LoadSoundEffect("help", "help.wav");
-        LoadSoundEffect("settings","settings.wav");
-        LoadSoundEffect("reset","reset.wav");
-        LoadSoundEffect("max_height_is","max_height_is.wav");
+        LoadSoundEffect("added_ENGLISH","added_ENGLISH.wav");
+        LoadSoundEffect("added_SPANISH","added_SPANISH.wav");
+        LoadSoundEffect("help_ENGLISH", "help_ENGLISH.wav");
+        LoadSoundEffect("help_SPANISH", "help_SPANISH.wav");
+        LoadSoundEffect("settings_ENGLISH","settings_ENGLISH.wav");
+        LoadSoundEffect("settings_SPANISH","settings_SPANISH.wav");
+        LoadSoundEffect("reset_ENGLISH","reset_ENGLISH.wav");
+        LoadSoundEffect("reset_SPANISH","reset_SPANISH.wav");
+        LoadSoundEffect("max_height_is_ENGLISH","max_height_is_ENGLISH.wav");
+        LoadSoundEffect("max_height_is_SPANISH","max_height_is_SPANISH.wav");
 
         for (int i = 2; i < 9; i++) {
-            LoadSoundEffect("split"+i,"split"+i+".wav");
+            LoadSoundEffect("split"+i+"_ENGLISH","split"+i+"_ENGLISH.wav");
+            LoadSoundEffect("split"+i+"_SPANISH","split"+i+"_SPANISH.wav");
         }
 
         for (int i = 0; i < 10; i++) {
-            LoadSoundEffect(i+"", i+".wav");
+            LoadSoundEffect(i+"_ENGLISH", i+"_ENGLISH.wav");
+            LoadSoundEffect(i+"_SPANISH", i+"_SPANISH.wav");
         }
     }
 
     public void LoadTTS(String lang) {
         for (int i = 0; i < 29; i++) {
-            /*switch (i) {
-                case 13: break;
-                case 15: break;
-                case 22: break;
-                case 25: break;
-                default:
-                    String filename = "text" + i + lang;
-                    //System.out.println("loading: "+filename);
-                    LoadSoundEffect(filename,filename + ".wav");
-
-            }*/
-
             String filename = "text" + i + lang;
             LoadSoundEffect(filename,filename + ".wav");
 
         }
     }
 
-    public void ReadHeight(String s, String text) {
+    public void ReadHeight(String s, int textstate, String lang) {
 
+        String text = "text" + textstate + lang;
         StopSound(text);
+        int FramePos = getFramePosition(text);
         StopSound("launched");
-        PlaySoundEffect("max_height_is");
+        PlaySoundEffect("max_height_is"+lang);
         Sleep(1300);
 
         char a = s.charAt(0);
@@ -205,20 +210,22 @@ public class SoundManager extends TextManager {
         char c = s.charAt(2);
 
 
-        PlaySoundEffect(String.valueOf(a));
+        PlaySoundEffect(String.valueOf(a)+lang);
         Sleep(500);
 
-        PlaySoundEffect(String.valueOf(b));
+        PlaySoundEffect(String.valueOf(b)+lang);
         Sleep(500);
 
-        PlaySoundEffect(String.valueOf(c));
+        PlaySoundEffect(String.valueOf(c)+lang);
         Sleep(500);
 
         if (s.length() == 4) {
             char d = s.charAt(3);
-            PlaySoundEffect(String.valueOf(d));
+            PlaySoundEffect(String.valueOf(d)+lang);
             Sleep(500);
         }
+
+        PlayTTS(textstate, lang, FramePos);
 
 
 
