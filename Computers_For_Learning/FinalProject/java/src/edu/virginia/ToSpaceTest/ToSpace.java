@@ -42,7 +42,6 @@ public class ToSpace extends Game implements MouseListener {
 
 
 
-
 	private float highscore = 0;
 	private int solidfuelselect = 0;
 	private int liquidfuelselect = 0;
