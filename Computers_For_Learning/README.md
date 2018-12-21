@@ -14,4 +14,4 @@ Lab5 is the culmination of all the game engine labs, including movement of anima
 
 Final_Game_Design.pdf includes a description of the game created and the learning theory behind it.
 
-FinalProject contains the final project, a space-exploration fraction learning game for 3rd-5th grade students. The main class in this project is ToSpace.
+FinalProject contains the final project, a space-exploration fraction learning game for 3rd-5th grade students. The main class in this project is ToSpace. The code in this repository represents our minimum viable product which we created in less than three weeks. Our vision for a full version of the game can be found in Full_Game_Design.pdf
