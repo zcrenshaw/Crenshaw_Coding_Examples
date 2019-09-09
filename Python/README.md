@@ -1,6 +1,6 @@
 # Python
 
-This repository has some simple side projects I made in Python
+This repository has some simple side projects I made in Python. More sophisticated projects can be found at zcrenshaw/SlangTransmission
 
 Uno: A game of uno, only using text and line-by-line instructions at the shell
 
