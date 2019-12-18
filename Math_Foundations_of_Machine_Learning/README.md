@@ -1,0 +1,5 @@
+# Mathematical_Foundations_of_Machine_Learning
+
+This course is an introduction to key mathematical concepts at the heart of machine learning. The focus is on matrix methods and statistical models and features real-world applications ranging from classification and clustering to denoising and recommender systems. Mathematical topics covered include linear equations, regression, regularization, the singular value decomposition, iterative optimization algorithms, and probabilistic models. Machine learning topics include the LASSO, support vector machines, kernel methods, clustering, and deep learning.
+
+My work in this class is best summed up in Homework 5, which covers linear estimators on overdetermined and undetermined systems, interpreting and using the SVD, power iteration to find the first eigenvector, deblurring, PCR, and PCA. I have included the homework in Jupyter Notebook and PDF format.
