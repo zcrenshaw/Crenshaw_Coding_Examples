@@ -2,19 +2,19 @@
 
 This folder contains some of the work I did for Introduction to Computer Vision (CMSC 25400), taught by Professor Michael Maire. This class covered the following topics:
 
-Camera Geometry, Image Formation, Color
-Image Processing and Filtering
-Feature and Edge Detection, Matching, Model Fitting
-Stereo, Optical Flow, Structure from Motion
-Segmentation and Grouping
-Deep Learning
-Convolutional Neural Network Architectures
-Object Detection
-Generative Adversarial Networks (GANs)
-Autoregressive Models
-Unsupervised and Self-Supervised Learning
-Adversarial Examples
-Vision and Language
+* Camera Geometry, Image Formation, Color
+* Image Processing and Filtering
+* Feature and Edge Detection, Matching, Model Fitting
+* Stereo, Optical Flow, Structure from Motion
+* Segmentation and Grouping
+* Deep Learning
+* Convolutional Neural Network Architectures
+* Object Detection
+* Generative Adversarial Networks (GANs)
+* Autoregressive Models
+* Unsupervised and Self-Supervised Learning
+* Adversarial Examples
+* Vision and Language
 
 There are three directories in this folder:
 
